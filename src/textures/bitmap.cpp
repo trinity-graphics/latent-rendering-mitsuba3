@@ -515,6 +515,8 @@ public:
         } else {
             if (channels == 1)
                 return interpolate_1(si, active);
+            else if constexpr (is_latent_v<Spectrum>)
+                return interpolate_n(si, active);
             else if constexpr (is_spectral_v<Spectrum>)
                 return interpolate_spectral(si, active);
             else
@@ -864,6 +866,22 @@ protected:
             return Result(v);
         }
     }
+
+    /**
+     * \brief Evaluates the texture at the given surface interaction
+     *
+     * Should be used when the volume data has an arbitrary number of channels.
+     */
+    MI_INLINE UnpolarizedSpectrum interpolate_n(const SurfaceInteraction3f &si,
+                                                Mask active) const {
+        if constexpr (!dr::is_array_v<Mask>)
+            active = true;
+
+        Point2f uv = m_transform * si.uv;
+
+        return m_texture.template eval<UnpolarizedSpectrum>(uv, active);
+    }
+
 
     /**
      * \brief Recompute mean and 2D sampling distribution (if requested)

@@ -21,6 +21,7 @@ struct spectrum_traits<Color<Float, 1>> {
     using Unpolarized                        = Color<Float, 1>;
     static constexpr bool is_monochromatic   = true;
     static constexpr bool is_rgb             = false;
+    static constexpr bool is_latent          = false;
     static constexpr bool is_spectral        = false;
     static constexpr bool is_polarized       = false;
 };
@@ -32,6 +33,31 @@ struct spectrum_traits<Color<Float, 3>> {
     using Unpolarized                        = Color<Float, 3>;
     static constexpr bool is_monochromatic   = false;
     static constexpr bool is_rgb             = true;
+    static constexpr bool is_latent          = false;
+    static constexpr bool is_spectral        = false;
+    static constexpr bool is_polarized       = false;
+};
+
+template <typename Float>
+struct spectrum_traits<Color<Float, 4>> {
+    using Scalar                             = Color<dr::scalar_t<Float>, 4>;
+    using Wavelength                         = Color<Float, 0>;
+    using Unpolarized                        = Color<Float, 4>;
+    static constexpr bool is_monochromatic   = false;
+    static constexpr bool is_rgb             = false;
+    static constexpr bool is_latent          = true;
+    static constexpr bool is_spectral        = false;
+    static constexpr bool is_polarized       = false;
+};
+
+template <typename Float>
+struct spectrum_traits<Color<Float, 16>> {
+    using Scalar                             = Color<dr::scalar_t<Float>, 16>;
+    using Wavelength                         = Color<Float, 0>;
+    using Unpolarized                        = Color<Float, 16>;
+    static constexpr bool is_monochromatic   = false;
+    static constexpr bool is_rgb             = false;
+    static constexpr bool is_latent          = true;
     static constexpr bool is_spectral        = false;
     static constexpr bool is_polarized       = false;
 };
@@ -43,6 +69,7 @@ struct spectrum_traits<Spectrum<Float, Size>> {
     using Unpolarized                        = Spectrum<Float, Size>;
     static constexpr bool is_monochromatic   = false;
     static constexpr bool is_rgb             = false;
+    static constexpr bool is_latent          = false;
     static constexpr bool is_spectral        = true;
     static constexpr bool is_polarized       = false;
 };
@@ -72,6 +99,7 @@ NAMESPACE_END(detail)
 
 template <typename T> constexpr bool is_monochromatic_v = detail::spectrum_traits<T>::is_monochromatic;
 template <typename T> constexpr bool is_rgb_v = detail::spectrum_traits<T>::is_rgb;
+template <typename T> constexpr bool is_latent_v = detail::spectrum_traits<T>::is_latent;
 template <typename T> constexpr bool is_spectral_v = detail::spectrum_traits<T>::is_spectral;
 template <typename T> constexpr bool is_polarized_v = detail::spectrum_traits<T>::is_polarized;
 template <typename T> using scalar_spectrum_t = typename detail::spectrum_traits<T>::Scalar;

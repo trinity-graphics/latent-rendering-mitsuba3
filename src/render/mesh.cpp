@@ -1744,6 +1744,8 @@ Mesh<Float, Spectrum>::eval_attribute(std::string_view name,
         auto result = interpolate_attribute<3, false>(attr.type, attr.buf, si, active);
         if constexpr (is_monochromatic_v<Spectrum>)
             return luminance(result);
+        else if constexpr (is_latent_v<Spectrum>)
+            return luminance(result);
         else
             return result;
     } else {

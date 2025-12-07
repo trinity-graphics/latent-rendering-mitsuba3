@@ -350,6 +350,13 @@ public:
                 else // 3 channels
                     return luminance(interpolate_3(it, active));
             }
+            else if constexpr (is_latent_v<Spectrum>) {
+                if (channels == 1) {
+                    return interpolate_1(it, active);
+                } else {
+                    return interpolate_n(it, active);
+                }
+            }
             else{
                 if (channels == 1)
                     return interpolate_1(it, active);
@@ -561,6 +568,44 @@ protected:
         Point3f p = m_to_local * it.p;
         return m_accel ? m_texture.template eval<Color3f>(p, active)
                        : m_texture.template eval_nonaccel<Color3f>(p, active);
+    }
+
+    /**
+     * \brief Evaluates the volume at the given interaction
+     *
+     * Should be used when the volume data has exactly 16 channels.
+     */
+    MI_INLINE dr::Array<Float, 16> interpolate_16(const Interaction3f &it,
+                                     Mask active) const {
+        MI_MASK_ARGUMENT(active);
+
+        Point3f p = m_to_local * it.p;
+        dr::Array<Float, 16> result;
+        if (m_accel)
+            m_texture.template eval<Float>(p, result.data(), active);
+        else
+            m_texture.template eval_nonaccel<Float>(p, result.data(), active);
+
+        return result;
+    }
+
+    /**
+     * \brief Evaluates the volume at the given interaction
+     *
+     * Should be used when the volume data has an arbitrary number of channels.
+     */
+    MI_INLINE UnpolarizedSpectrum interpolate_n(const Interaction3f &it,
+                                     Mask active) const {
+        MI_MASK_ARGUMENT(active);
+
+        Point3f p = m_to_local * it.p;
+        UnpolarizedSpectrum result;
+        if (m_accel)
+            m_texture.template eval<Float>(p, result.data(), active);
+        else
+            m_texture.template eval_nonaccel<Float>(p, result.data(), active);
+
+        return result;
     }
 
     /**

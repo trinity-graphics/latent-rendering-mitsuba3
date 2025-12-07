@@ -162,9 +162,10 @@ public:
             ScalarFloat *row = out_ptr + y * sw * PixelWidth;
             for (size_t x = 0; x < m_res.x(); ++x) {
                 ScalarColor3f rgb = dr::load<ScalarVector3f>(in_ptr);
-
                 ScalarPixelData coeff;
                 if constexpr (is_monochromatic_v<Spectrum>) {
+                    coeff = ScalarPixelData(luminance(rgb));
+                } else if constexpr (is_latent_v<Spectrum>) {
                     coeff = ScalarPixelData(luminance(rgb));
                 } else if constexpr (is_rgb_v<Spectrum>) {
                     coeff = rgb;
@@ -483,6 +484,8 @@ protected:
                 ScalarFloat lum;
                 if constexpr (is_monochromatic_v<Spectrum>)
                     lum = coeff.x();
+                else if constexpr (is_latent_v<Spectrum>)
+                    lum = dr::mean(dr::abs(coeff));
                 else if constexpr (is_rgb_v<Spectrum>)
                     lum = luminance(ScalarColor3f(coeff));
                 else
@@ -588,6 +591,8 @@ protected:
 
             if constexpr (is_monochromatic_v<Spectrum>)
                 return dr::head<1>(v_rgb) * m_scale;
+            else if constexpr (is_latent_v<Spectrum>)
+                return dr::mean(v_rgb) * m_scale;
             else
                 return v_rgb * m_scale;
         }

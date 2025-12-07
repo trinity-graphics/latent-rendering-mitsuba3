@@ -168,6 +168,7 @@ NB_MODULE(MI_VARIANT_NAME, m) {
     // TODO: Add documentation
     m.attr("is_monochromatic") = is_monochromatic_v<Spectrum>;
     m.attr("is_rgb") = is_rgb_v<Spectrum>;
+    m.attr("is_latent") = is_latent_v<Spectrum>;
     m.attr("is_spectral") = is_spectral_v<Spectrum>;
     m.attr("is_polarized") = is_polarized_v<Spectrum>;
 

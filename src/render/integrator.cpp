@@ -500,6 +500,8 @@ SamplingIntegrator<Float, Spectrum>::render_sample(const Scene *scene,
             rgb = spectrum_to_srgb(spec_u, ray.wavelengths, active);
         else if constexpr (is_monochromatic_v<Spectrum>)
             rgb = spec_u.x();
+        else if constexpr (is_latent_v<Spectrum>)
+            rgb = dr::mean(dr::abs(spec_u));
         else
             rgb = spec_u;
 

@@ -427,6 +427,10 @@ dr::value_t<Spectrum> luminance(const Spectrum &value,
         DRJIT_MARK_USED(active);
         DRJIT_MARK_USED(wavelengths);
         return luminance(value);
+    } else if constexpr (is_latent_v<Spectrum>) {
+        DRJIT_MARK_USED(active);
+        DRJIT_MARK_USED(wavelengths);
+        return luminance(value);
     } else if constexpr (is_monochromatic_v<Spectrum>) {
         DRJIT_MARK_USED(active);
         DRJIT_MARK_USED(wavelengths);
@@ -434,6 +438,14 @@ dr::value_t<Spectrum> luminance(const Spectrum &value,
     } else {
         return dr::mean(cie1931_y(wavelengths, active) * value);
     }
+}
+
+template <typename Float> Float luminance(const Color<Float, 16> &c) {
+    return dr::mean(dr::abs(c));
+}
+
+template <typename Float> Float luminance(const Color<Float, 4> &c) {
+    return dr::mean(dr::abs(c));
 }
 
 template <typename Float> Float luminance(const Color<Float, 3> &c) {

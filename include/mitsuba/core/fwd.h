@@ -185,6 +185,9 @@ template <typename Float_> struct CoreAliases {
     using Color1d = Color<Float64, 1>;
     using Color3d = Color<Float64, 3>;
 
+    using Latent4f = Color<Float, 4>;
+    using Latent16f = Color<Float, 16>;
+
     using TensorXf = dr::Tensor<mitsuba::DynamicBuffer<Float>>;
     using TensorXf16 = dr::Tensor<mitsuba::DynamicBuffer<Float16>>;
     using TensorXf32 = dr::Tensor<mitsuba::DynamicBuffer<Float32>>;

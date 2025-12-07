@@ -233,7 +233,7 @@ public:
         m_sun_irrad_dataset = load_field<TensorXf32>(sampling_dataset, "sun_irradiance");
 
         // Only used in spectral mode since limb darkening is baked in the RGB dataset
-        if constexpr (!is_rgb_v<Spectrum>) {
+        if constexpr (is_spectral_v<Spectrum>) {
             m_sun_ld = load_field<TensorXf64>(datasets, "sun_ld_spec");
         }
 
@@ -1140,7 +1140,8 @@ protected:
 
         if constexpr (is_rgb_v<Spectrum>) {
             albedo = dr::ravel(albedo_tex->eval(si));
-
+        } else if constexpr (is_latent_v<Spectrum>) {
+            albedo = dr::ravel(albedo_tex->eval(si));
         } else if constexpr (dr::is_array_v<Float> && is_spectral_v<Spectrum>) {
             si.wavelengths = dr::load<FloatStorage>(WAVELENGTHS<ScalarFloat>, CHANNEL_COUNT);
             albedo = albedo_tex->eval(si)[0];

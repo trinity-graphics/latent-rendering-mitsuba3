@@ -79,6 +79,8 @@ public:
 
         if constexpr (is_spectral_v<Spectrum>)
             return srgb_model_eval<UnpolarizedSpectrum>(m_value, si.wavelengths);
+        else if constexpr (is_latent_v<Spectrum>)
+            return dr::mean(dr::abs(m_value));
         else
             return m_value;
     }

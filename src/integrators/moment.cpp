@@ -90,6 +90,8 @@ public:
                 xyz = spec_u.x();
             } else if constexpr (is_rgb_v<Spectrum>) {
                 xyz = srgb_to_xyz(spec_u, active);
+            } else if constexpr (is_latent_v<Spectrum>) {
+                xyz = dr::mean(dr::abs(spec_u));
             } else {
                 static_assert(is_spectral_v<Spectrum>);
                 /// Note: this assumes that sensor used sample_rgb_spectrum() to generate 'ray.wavelengths'
