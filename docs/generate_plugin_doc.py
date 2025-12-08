@@ -108,7 +108,8 @@ INTEGRATOR_ORDERING = [
 
 FILM_ORDERING = [
     'hdrfilm',
-    'specfilm'
+    'specfilm',
+    'latfilm'
 ]
 
 RFILTER_ORDERING = [
