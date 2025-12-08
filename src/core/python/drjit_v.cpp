@@ -97,6 +97,10 @@ MI_PY_EXPORT(DrJit) {
     bind_dr<Color<ScalarFloat, 1>>(m, "ScalarColor1f");
     bind_dr<Color<ScalarFloat, 3>>(m, "ScalarColor3f");
 
+    // Latent
+    bind_dr<dr::Array<Float, 4>>(m, "Color4f");
+    bind_dr<dr::Array<Float, 16>>(m, "Color16f");
+
     bind_dr<Color<Float64, 0>>(m, "Color0d");
     bind_dr<Color<Float64, 1>>(m, "Color1d");
     bind_dr<Color<Float64, 3>>(m, "Color3d");
