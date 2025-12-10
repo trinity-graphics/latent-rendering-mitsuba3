@@ -484,8 +484,14 @@ SamplingIntegrator<Float, Spectrum>::render_sample(const Scene *scene,
 
     const Medium *medium = sensor->medium();
 
+    size_t skip_ch;
+    if constexpr (is_latent_v<Spectrum>)
+        skip_ch = Spectrum::Size + 1;
+    else
+        skip_ch = has_alpha ? 5 : 4;    /* skip R,G,B,[A],W */
+
     auto [spec, valid] = sample(scene, sampler, ray, medium,
-               aovs + (has_alpha ? 5 : 4) /* skip R,G,B,[A],W */, active);
+               aovs + skip_ch, active);
 
     UnpolarizedSpectrum spec_u = unpolarized_spectrum(ray_weight * spec);
 
@@ -495,25 +501,29 @@ SamplingIntegrator<Float, Spectrum>::render_sample(const Scene *scene,
                              /*alpha */ dr::select(valid, Float(1.f), Float(0.f)),
                              valid);
     } else {
-        Color3f rgb;
-        if constexpr (is_spectral_v<Spectrum>)
-            rgb = spectrum_to_srgb(spec_u, ray.wavelengths, active);
-        else if constexpr (is_monochromatic_v<Spectrum>)
-            rgb = spec_u.x();
-        else if constexpr (is_latent_v<Spectrum>)
-            rgb = dr::mean(dr::abs(spec_u));
-        else
-            rgb = spec_u;
-
-        aovs[0] = rgb.x();
-        aovs[1] = rgb.y();
-        aovs[2] = rgb.z();
-
-        if (likely(has_alpha)) {
-            aovs[3] = dr::select(valid, Float(1.f), Float(0.f));
-            aovs[4] = 1.f;
+        if constexpr (is_latent_v<Spectrum>) {
+            for (size_t i = 0; i < Spectrum::Size; ++i)
+                aovs[i] = spec_u[i];
+            aovs[Spectrum::Size] = 1.f;
         } else {
-            aovs[3] = 1.f;
+            Color3f rgb;
+            if constexpr (is_spectral_v<Spectrum>)
+                rgb = spectrum_to_srgb(spec_u, ray.wavelengths, active);
+            else if constexpr (is_monochromatic_v<Spectrum>)
+                rgb = spec_u.x();
+            else
+                rgb = spec_u;
+
+            aovs[0] = rgb.x();
+            aovs[1] = rgb.y();
+            aovs[2] = rgb.z();
+
+            if (likely(has_alpha)) {
+                aovs[3] = dr::select(valid, Float(1.f), Float(0.f));
+                aovs[4] = 1.f;
+            } else {
+                aovs[3] = 1.f;
+            }
         }
     }
 

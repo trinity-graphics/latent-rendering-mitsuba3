@@ -181,26 +181,34 @@ public:
         DRJIT_MARK_USED(wavelengths);
 
         UnpolarizedSpectrum spec_u = unpolarized_spectrum(value);
+        
+        static constexpr size_t values_size = is_latent_v<Spectrum> ? Spectrum::Size : 5;
+        Float values[values_size];
 
-        Color3f rgb;
-        if constexpr (is_spectral_v<Spectrum>)
-            rgb = spectrum_to_srgb(spec_u, wavelengths, active);
-        else if constexpr (is_monochromatic_v<Spectrum>)
-            rgb = spec_u.x();
-        else if constexpr (is_latent_v<Spectrum>)
-            rgb = dr::mean(spec_u);
-        else
-            rgb = spec_u;
-
-        Float values[5] = { rgb.x(), rgb.y(), rgb.z(), 0, 0 };
-
-        if (m_channel_count == 4) {
-            values[3] = weight;
-        } else if (m_channel_count == 5) {
-            values[3] = alpha;
-            values[4] = weight;
+        if constexpr (is_latent_v<Spectrum>) {
+            for (size_t i = 0; i < Spectrum::Size; ++i)
+                values[i] = spec_u[i];
         } else {
-            Throw("ImageBlock::put(): non-standard image block configuration! (AOVs?)");
+            Color3f rgb;
+            if constexpr (is_spectral_v<Spectrum>)
+                rgb = spectrum_to_srgb(spec_u, wavelengths, active);
+            else if constexpr (is_monochromatic_v<Spectrum>)
+                rgb = spec_u.x();
+            else
+                rgb = spec_u;
+
+            values[0] = rgb.x();
+            values[1] = rgb.y();
+            values[2] = rgb.z();
+
+            if (m_channel_count == 4) {
+                values[3] = weight;
+            } else if (m_channel_count == 5) {
+                values[3] = alpha;
+                values[4] = weight;
+            } else {
+                Throw("ImageBlock::put(): non-standard image block configuration! (AOVs?)");
+            }
         }
 
         put(pos, values, active);
