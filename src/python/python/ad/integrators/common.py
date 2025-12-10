@@ -386,16 +386,20 @@ class ADIntegrator(mi.CppADIntegrator):
         else:
             if mi.is_polarized:
                 value = mi.unpolarized_spectrum(value)
-            if mi.is_spectral:
-                rgb = mi.spectrum_to_srgb(value, wavelengths)
-            elif mi.is_monochromatic:
-                rgb = mi.Color3f(value.x)
+
+            if mi.is_latent:
+                aovs = [*value, weight] + aovs
             else:
-                rgb = value
-            if mi.has_flag(film.flags(), mi.FilmFlags.Alpha):
-                aovs = [rgb.x, rgb.y, rgb.z, alpha, weight] + aovs
-            else:
-                aovs = [rgb.x, rgb.y, rgb.z, weight] + aovs
+                if mi.is_spectral:
+                    rgb = mi.spectrum_to_srgb(value, wavelengths)
+                elif mi.is_monochromatic:
+                    rgb = mi.Color3f(value.x)
+                else:
+                    rgb = value
+                if mi.has_flag(film.flags(), mi.FilmFlags.Alpha):
+                    aovs = [rgb.x, rgb.y, rgb.z, alpha, weight] + aovs
+                else:
+                    aovs = [rgb.x, rgb.y, rgb.z, weight] + aovs
             block.put(pos, aovs)
 
 
