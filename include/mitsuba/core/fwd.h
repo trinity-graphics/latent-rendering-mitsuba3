@@ -57,6 +57,7 @@ template <typename Value, size_t Size>          struct Vector;
 template <typename Value, size_t Size>          struct Point;
 template <typename Value, size_t Size>          struct Normal;
 template <typename Value, size_t Size>          struct Color;
+template <typename Value, size_t Size>          struct Latent;
 template <typename Value, size_t Size>          struct Spectrum;
 template <typename Point, bool Affine>          struct Transform;
 template <typename Point>                       using AffineTransform = Transform<Point, true>;
@@ -187,6 +188,8 @@ template <typename Float_> struct CoreAliases {
 
     using Latent4f = Color<Float, 4>;
     using Latent16f = Color<Float, 16>;
+    using Latent4d = Color<Float64, 4>;
+    using Latent16d = Color<Float64, 16>;
 
     using TensorXf = dr::Tensor<mitsuba::DynamicBuffer<Float>>;
     using TensorXf16 = dr::Tensor<mitsuba::DynamicBuffer<Float16>>;
@@ -294,6 +297,10 @@ template <typename Float_> struct CoreAliases {
     using prefix ## Color3f              = typename prefix ## CoreAliases::Color3f;                \
     using prefix ## Color1d              = typename prefix ## CoreAliases::Color1d;                \
     using prefix ## Color3d              = typename prefix ## CoreAliases::Color3d;                \
+    using prefix ## Latent4f             = typename prefix ## CoreAliases::Latent4f;               \
+    using prefix ## Latent16f            = typename prefix ## CoreAliases::Latent16f;              \
+    using prefix ## Latent4d             = typename prefix ## CoreAliases::Latent4d;               \
+    using prefix ## Latent16d            = typename prefix ## CoreAliases::Latent16d;              \
     using prefix ## TensorXf             = typename prefix ## CoreAliases::TensorXf;               \
     using prefix ## TensorXf16           = typename prefix ## CoreAliases::TensorXf16;             \
     using prefix ## TensorXf32           = typename prefix ## CoreAliases::TensorXf32;             \

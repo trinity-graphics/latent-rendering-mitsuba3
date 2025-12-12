@@ -28,6 +28,8 @@ NAMESPACE_BEGIN(parser)
 // using the highest possibly needed precision (i.e., double precision)
 using ScalarVector3d    = Vector<double, 3>;
 using ScalarColor3d     = Color<double, 3>;
+using ScalarLatent4d    = Color<double, 4>;
+using ScalarLatent16d   = Color<double, 16>;
 using ScalarPoint3d     = Point<double, 3>;
 using ScalarPoint4d     = Point<double, 4>;
 using ScalarMatrix4d    = dr::Matrix<double, 4>;
@@ -35,7 +37,7 @@ using ScalarAffineTransform4d = AffineTransform<ScalarPoint4d>;
 
 /// A list of all tag types that can be encountered in an XML file (excluding the various object type tags)
 enum class TagType {
-    Boolean, Integer, Float, String, Point, Vector, Spectrum, RGB,
+    Boolean, Integer, Float, String, Point, Vector, Spectrum, RGB, Latent,
     Transform, Translate, Matrix, Rotate, Scale, LookAt, Object,
     NamedReference, Include, Alias, Default, Resource, Invalid
 };
@@ -153,6 +155,7 @@ static std::pair<TagType, ObjectType> interpret_tag(std::string_view str) {
             if (str == "integrator") return {TagType::Object, ObjectType::Integrator};
             break;
         case 'l':
+            if (str == "latent") return {TagType::Latent, ObjectType::Unknown};
             if (str == "lookat") return {TagType::LookAt, ObjectType::Unknown};
             break;
         case 'm':
@@ -732,6 +735,51 @@ static void parse_xml_node(const ParserConfig &config, ParserState &state,
             }
 
             state[parent_idx].props.set(name, color);
+            break;
+        }
+
+        case TagType::Latent: {
+            check_attributes(state, scene_node, node, {"!name"sv, "!value"sv});
+
+            std::string_view value = node.attribute("value").value();
+
+            // Parse RGB values (1 or 3 components)
+            auto tokens = string::tokenize(value);
+
+            try {
+                if (tokens.size() == 4) {
+                    ScalarLatent4d color = ScalarLatent4d(string::stof<double>(tokens[0]),
+                                                        string::stof<double>(tokens[1]),
+                                                        string::stof<double>(tokens[2]),
+                                                        string::stof<double>(tokens[3]));
+                    state[parent_idx].props.set(name, color);
+                } else if (tokens.size() == 16) {
+                    ScalarLatent16d color = ScalarLatent16d(string::stof<double>(tokens[0]),
+                                                            string::stof<double>(tokens[1]),
+                                                            string::stof<double>(tokens[2]),
+                                                            string::stof<double>(tokens[3]),
+                                                            string::stof<double>(tokens[4]),
+                                                            string::stof<double>(tokens[5]),
+                                                            string::stof<double>(tokens[6]),
+                                                            string::stof<double>(tokens[7]),
+                                                            string::stof<double>(tokens[8]),
+                                                            string::stof<double>(tokens[9]),
+                                                            string::stof<double>(tokens[10]),
+                                                            string::stof<double>(tokens[11]),
+                                                            string::stof<double>(tokens[12]),
+                                                            string::stof<double>(tokens[13]),
+                                                            string::stof<double>(tokens[14]),
+                                                            string::stof<double>(tokens[15]));
+                    state[parent_idx].props.set(name, color);
+                } else {
+                    fail(state, scene_node,
+                         "<rgb> tag requires four or sixteen values (got %zu)",
+                         tokens.size());
+                }
+            } catch (...) {
+                fail(state, scene_node, "could not parse Latent value \"%s\"", value);
+            }
+
             break;
         }
 

@@ -30,7 +30,11 @@ std::string_view property_type_name(Properties::Type type) {
         case Properties::Type::Float:             return "float";
         case Properties::Type::String:            return "string";
         case Properties::Type::Vector:            return "vector";
+        case Properties::Type::Vector4:           return "vector4";
+        case Properties::Type::Vector16:          return "vector16";
         case Properties::Type::Color:             return "rgb";
+        case Properties::Type::Latent4:           return "latent4";
+        case Properties::Type::Latent16:          return "latent16";
         case Properties::Type::Spectrum:          return "spectrum";
         case Properties::Type::Transform:         return "transform";
         case Properties::Type::Reference:         return "ref";
@@ -43,7 +47,11 @@ std::string_view property_type_name(Properties::Type type) {
 
 using Float             = double;
 using Array3f           = dr::Array<Float, 3>;
+using Array4f           = dr::Array<Float, 4>;
+using Array16f          = dr::Array<Float, 16>;
 using Color3f           = Color<Float, 3>;
+using Latent4f          = Color<Float, 4>;
+using Latent16f         = Color<Float, 16>;
 using AffineTransform3f = AffineTransform<Point<double, 3>>;
 using AffineTransform4f = AffineTransform<Point<double, 4>>;
 using Reference         = Properties::Reference;
@@ -56,7 +64,11 @@ template<> struct variant_type<Float> { static constexpr auto value = Type::Floa
 template<> struct variant_type<int64_t> { static constexpr auto value = Type::Integer; };
 template<> struct variant_type<std::string> { static constexpr auto value = Type::String; };
 template<> struct variant_type<Array3f> { static constexpr auto value = Type::Vector; };
+template<> struct variant_type<Array4f> { static constexpr auto value = Type::Vector4; };
+template<> struct variant_type<Array16f> { static constexpr auto value = Type::Vector16; };
 template<> struct variant_type<Color3f> { static constexpr auto value = Type::Color; };
+template<> struct variant_type<Latent4f> { static constexpr auto value = Type::Latent4; };
+template<> struct variant_type<Latent16f> { static constexpr auto value = Type::Latent16; };
 template<> struct variant_type<AffineTransform4f> { static constexpr auto value = Type::Transform; };
 template<> struct variant_type<Reference> { static constexpr auto value = Type::Reference; };
 template<> struct variant_type<ResolvedReference> { static constexpr auto value = Type::ResolvedReference; };
@@ -65,7 +77,7 @@ template<> struct variant_type<Any> { static constexpr auto value = Type::Any; }
 template<> struct variant_type<Properties::Spectrum> { static constexpr auto value = Type::Spectrum; };
 
 using Variant = std::variant<std::monostate, bool, int64_t, Float, std::string,
-                             Array3f, Color3f, Properties::Spectrum, AffineTransform4f, Reference,
+                             Array3f, Array4f, Array16f, Color3f, Latent4f, Latent16f, Properties::Spectrum, AffineTransform4f, Reference,
                              ResolvedReference, ref<Object>, Any>;
 
 /// Minimal heap-allocated string for efficient storage with string_view compatibility
@@ -386,7 +398,11 @@ bool Properties::operator==(const Properties &p) const {
             bool operator()(const Float &v) const { return v == std::get<Float>(other); }
             bool operator()(const std::string &v) const { return v == std::get<std::string>(other); }
             bool operator()(const Array3f &v) const { return dr::all(v == std::get<Array3f>(other)); }
+            bool operator()(const Array4f &v) const { return dr::all(v == std::get<Array4f>(other)); }
+            bool operator()(const Array16f &v) const { return dr::all(v == std::get<Array16f>(other)); }
             bool operator()(const Color3f &v) const { return dr::all(v == std::get<Color3f>(other)); }
+            bool operator()(const Latent4f &v) const { return dr::all(v == std::get<Latent4f>(other)); }
+            bool operator()(const Latent16f &v) const { return dr::all(v == std::get<Latent16f>(other)); }
             bool operator()(const Properties::Spectrum &v) const { return v == std::get<Properties::Spectrum>(other); }
             bool operator()(const AffineTransform4f &v) const { return v == std::get<AffineTransform4f>(other); }
             bool operator()(const Reference &v) const { return v == std::get<Reference>(other); }
@@ -434,10 +450,62 @@ size_t Properties::hash() const {
                 h = hash_combine(h, mitsuba::hash(v.z()));
                 return h;
             }
+            size_t operator()(const Array4f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                return h;
+            }
+            size_t operator()(const Array16f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                h = hash_combine(h, mitsuba::hash(v[4]));
+                h = hash_combine(h, mitsuba::hash(v[5]));
+                h = hash_combine(h, mitsuba::hash(v[6]));
+                h = hash_combine(h, mitsuba::hash(v[7]));
+                h = hash_combine(h, mitsuba::hash(v[8]));
+                h = hash_combine(h, mitsuba::hash(v[9]));
+                h = hash_combine(h, mitsuba::hash(v[10]));
+                h = hash_combine(h, mitsuba::hash(v[11]));
+                h = hash_combine(h, mitsuba::hash(v[12]));
+                h = hash_combine(h, mitsuba::hash(v[13]));
+                h = hash_combine(h, mitsuba::hash(v[14]));
+                h = hash_combine(h, mitsuba::hash(v[15]));
+                return h;
+            }
             size_t operator()(const Color3f &v) const {
                 size_t h = mitsuba::hash(v[0]);
                 h = hash_combine(h, mitsuba::hash(v[1]));
                 h = hash_combine(h, mitsuba::hash(v[2]));
+                return h;
+            }
+            size_t operator()(const Latent4f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                return h;
+            }
+            size_t operator()(const Latent16f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                h = hash_combine(h, mitsuba::hash(v[4]));
+                h = hash_combine(h, mitsuba::hash(v[5]));
+                h = hash_combine(h, mitsuba::hash(v[6]));
+                h = hash_combine(h, mitsuba::hash(v[7]));
+                h = hash_combine(h, mitsuba::hash(v[8]));
+                h = hash_combine(h, mitsuba::hash(v[9]));
+                h = hash_combine(h, mitsuba::hash(v[10]));
+                h = hash_combine(h, mitsuba::hash(v[11]));
+                h = hash_combine(h, mitsuba::hash(v[12]));
+                h = hash_combine(h, mitsuba::hash(v[13]));
+                h = hash_combine(h, mitsuba::hash(v[14]));
+                h = hash_combine(h, mitsuba::hash(v[15]));
                 return h;
             }
             size_t operator()(const Properties::Spectrum &s) const {
@@ -481,9 +549,13 @@ namespace {
         void operator()(const int64_t &i) { os << i; }
         void operator()(const Float &f) { os << f; }
         void operator()(const Array3f &t) { os << t; }
+        void operator()(const Array4f &t) { os << t; }
+        void operator()(const Array16f &t) { os << t; }
         void operator()(const std::string &s) { os << "\"" << s << "\""; }
         void operator()(const AffineTransform4f &t) { os << t.matrix; }
         void operator()(const Color3f &t) { os << t; }
+        void operator()(const Latent4f &t) { os << t; }
+        void operator()(const Latent16f &t) { os << t; }
         void operator()(const Properties::Spectrum &s) {
             if (s.is_uniform()) {
                 os << "[spectrum: " << s.values[0] << "]";
@@ -603,6 +675,8 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
 
     // Determine variant properties
     bool is_spectral      = variant.find("spectral") != std::string::npos,
+         is_latent4       = variant.find("latent4")  != std::string::npos,
+         is_latent16      = variant.find("latent16") != std::string::npos,
          is_monochromatic = variant.find("mono")     != std::string::npos;
 
     switch (type) {
@@ -616,6 +690,12 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
                     // For monochromatic variants or non-emitters, create uniform texture
                     plugin_name = "uniform";
                     props.set("value", scalar_value);
+                } else if (is_latent4) {
+                    plugin_name = "latspec";
+                    props.set("color", Latent4f(scalar_value));
+                } else if (is_latent16) {
+                    plugin_name = "latspec";
+                    props.set("color", Latent16f(scalar_value));
                 } else {
                     // For RGB/spectral emitters, create d65 texture with grayscale color
                     plugin_name = "d65";
@@ -635,6 +715,37 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
                     plugin_name = (emitter && is_spectral) ? "d65" : "srgb";
                     props.set("color", color);
                 }
+            }
+            break;
+        
+        case Type::Latent4: {
+                Latent4f color = std::get<Latent4f>(value);
+
+                // if (is_monochromatic) {
+                //     plugin_name = "uniform";
+                //     props.set("value", luminance(color));
+                // } else {
+                //     plugin_name = "latspec";
+                //     props.set("color", color);
+                // }
+                plugin_name = "latspec";
+                props.set("color", color);
+            }
+            break;
+
+        case Type::Latent16: {
+                Latent16f color = std::get<Latent16f>(value);
+
+                // if (is_monochromatic) {
+                //     plugin_name = "uniform";
+                //     props.set("value", luminance(color));
+                // } else {
+                //     plugin_name = "latspec";
+                //     props.set("color", color);
+                // }
+                
+                plugin_name = "latspec";
+                props.set("color", color);
             }
             break;
 

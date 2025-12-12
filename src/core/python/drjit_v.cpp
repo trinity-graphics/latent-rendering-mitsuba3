@@ -97,16 +97,23 @@ MI_PY_EXPORT(DrJit) {
     bind_dr<Color<ScalarFloat, 1>>(m, "ScalarColor1f");
     bind_dr<Color<ScalarFloat, 3>>(m, "ScalarColor3f");
 
-    // Latent
-    bind_dr<dr::Array<Float, 4>>(m, "Color4f");
-    bind_dr<dr::Array<Float, 16>>(m, "Color16f");
-
     bind_dr<Color<Float64, 0>>(m, "Color0d");
     bind_dr<Color<Float64, 1>>(m, "Color1d");
     bind_dr<Color<Float64, 3>>(m, "Color3d");
     bind_dr<Color<ScalarFloat64, 0>>(m, "ScalarColor0d");
     bind_dr<Color<ScalarFloat64, 1>>(m, "ScalarColor1d");
     bind_dr<Color<ScalarFloat64, 3>>(m, "ScalarColor3d");
+
+    // Latent
+    bind_dr<Color<Float, 4>>(m, "Latent4f");
+    bind_dr<Color<Float, 16>>(m, "Latent16f");
+    bind_dr<Color<ScalarFloat, 4>>(m, "ScalarLatent4f");
+    bind_dr<Color<ScalarFloat, 16>>(m, "ScalarLatent16f");
+
+    bind_dr<Color<Float64, 4>>(m, "Latent4d");
+    bind_dr<Color<Float64, 16>>(m, "Latent16d");
+    bind_dr<Color<ScalarFloat64, 4>>(m, "ScalarLatent4d");
+    bind_dr<Color<ScalarFloat64, 16>>(m, "ScalarLatent16d");
 
     bind_dr<Normal3f>(m, "Normal3f");
     bind_dr<Normal3d>(m, "Normal3d");
