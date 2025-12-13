@@ -40,6 +40,21 @@ static void parse_color_spectrum(ParserState &state, size_t parent_idx,
             Throw("[%s] could not interpret \"%s\" as a color.", path,
                   nb::str(value).c_str());
         }
+    } else if (type == "latent"){
+
+        if (!value.is_valid())
+            Throw("[%s] latent dictionary lacks \"value\" entry!");
+        
+        try {
+            state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 16>>(value));
+        } catch (const nb::cast_error &) {
+            try {
+                state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 4>>(value));
+            } catch (const nb::cast_error &) {
+                Throw("[%s] could not interpret \"%s\" as a color.", path,
+                    nb::str(value).c_str());
+            }
+        }
     } else {
         Properties::Spectrum spec;
 
@@ -144,7 +159,7 @@ static void parse_dict_impl(ParserState &state, const nb::dict &d,
                     key, Properties::Reference(
                              nb::cast<std::string_view>(child_dict["id"])));
                 continue;
-            } else if (type == "rgb" || type == "spectrum") {
+            } else if (type == "rgb" || type == "spectrum" || type == "latent") {
                 // Handle special "rgb" and "spectrum" dictionaries
                 parse_color_spectrum(state, parent_idx, key, child_dict, type, path);
                 continue;
@@ -246,7 +261,7 @@ static ParserState parse_dict(const ParserConfig &, const nb::dict &d) {
     root.props.set_plugin_name(plugin_name);
 
     // Handle dictionary with type="rgb" or type="spectrum" at the root level specially
-    if (plugin_name == "rgb" || plugin_name == "spectrum") {
+    if (plugin_name == "rgb" || plugin_name == "spectrum" || plugin_name == "latent") {
         root.type = ObjectType::Texture;
         state.nodes.push_back(std::move(root));
         state.node_paths.push_back("root");

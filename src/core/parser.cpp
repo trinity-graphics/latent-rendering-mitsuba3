@@ -1755,7 +1755,7 @@ static Task* instantiate_node(const ParserConfig &config,
         ref<Object> obj;
         try {
             // Special handling for rgb/spectrum dictionaries
-            if (props.plugin_name() == "rgb" || props.plugin_name() == "spectrum") {
+            if (props.plugin_name() == "rgb" || props.plugin_name() == "spectrum" || props.plugin_name() == "latent") {
                 // These are special texture types that need to be created via get_texture_impl
                 obj = props.get_texture_impl("value", config.variant, false, false);
             } else {
