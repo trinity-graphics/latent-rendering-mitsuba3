@@ -46,15 +46,20 @@ static void parse_color_spectrum(ParserState &state, size_t parent_idx,
             Throw("[%s] latent dictionary lacks \"value\" entry!");
         
         try {
-            state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 16>>(value));
+            state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 64>>(value));
         } catch (const nb::cast_error &) {
             try {
-                state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 4>>(value));
+                state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 16>>(value));
             } catch (const nb::cast_error &) {
-                Throw("[%s] could not interpret \"%s\" as a color.", path,
-                    nb::str(value).c_str());
+                try {
+                    state.nodes[parent_idx].props.set(key, nb::cast<Color<double, 4>>(value));
+                } catch (const nb::cast_error &) {
+                    Throw("[%s] could not interpret \"%s\" as a latent color.", path,
+                        nb::str(value).c_str());
+                }
             }
         }
+        
     } else {
         Properties::Spectrum spec;
 

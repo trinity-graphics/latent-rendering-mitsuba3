@@ -440,6 +440,10 @@ dr::value_t<Spectrum> luminance(const Spectrum &value,
     }
 }
 
+template <typename Float> Float luminance(const Color<Float, 64> &c) {
+    return dr::mean(dr::abs(c));
+}
+
 template <typename Float> Float luminance(const Color<Float, 16> &c) {
     return dr::mean(dr::abs(c));
 }

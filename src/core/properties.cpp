@@ -32,9 +32,11 @@ std::string_view property_type_name(Properties::Type type) {
         case Properties::Type::Vector:            return "vector";
         case Properties::Type::Vector4:           return "vector4";
         case Properties::Type::Vector16:          return "vector16";
+        case Properties::Type::Vector64:          return "vector64";
         case Properties::Type::Color:             return "rgb";
         case Properties::Type::Latent4:           return "latent4";
         case Properties::Type::Latent16:          return "latent16";
+        case Properties::Type::Latent64:          return "latent64";
         case Properties::Type::Spectrum:          return "spectrum";
         case Properties::Type::Transform:         return "transform";
         case Properties::Type::Reference:         return "ref";
@@ -49,9 +51,11 @@ using Float             = double;
 using Array3f           = dr::Array<Float, 3>;
 using Array4f           = dr::Array<Float, 4>;
 using Array16f          = dr::Array<Float, 16>;
+using Array64f          = dr::Array<Float, 64>;
 using Color3f           = Color<Float, 3>;
 using Latent4f          = Color<Float, 4>;
 using Latent16f         = Color<Float, 16>;
+using Latent64f         = Color<Float, 64>;
 using AffineTransform3f = AffineTransform<Point<double, 3>>;
 using AffineTransform4f = AffineTransform<Point<double, 4>>;
 using Reference         = Properties::Reference;
@@ -66,9 +70,11 @@ template<> struct variant_type<std::string> { static constexpr auto value = Type
 template<> struct variant_type<Array3f> { static constexpr auto value = Type::Vector; };
 template<> struct variant_type<Array4f> { static constexpr auto value = Type::Vector4; };
 template<> struct variant_type<Array16f> { static constexpr auto value = Type::Vector16; };
+template<> struct variant_type<Array64f> { static constexpr auto value = Type::Vector64; };
 template<> struct variant_type<Color3f> { static constexpr auto value = Type::Color; };
 template<> struct variant_type<Latent4f> { static constexpr auto value = Type::Latent4; };
 template<> struct variant_type<Latent16f> { static constexpr auto value = Type::Latent16; };
+template<> struct variant_type<Latent64f> { static constexpr auto value = Type::Latent64; };
 template<> struct variant_type<AffineTransform4f> { static constexpr auto value = Type::Transform; };
 template<> struct variant_type<Reference> { static constexpr auto value = Type::Reference; };
 template<> struct variant_type<ResolvedReference> { static constexpr auto value = Type::ResolvedReference; };
@@ -77,7 +83,7 @@ template<> struct variant_type<Any> { static constexpr auto value = Type::Any; }
 template<> struct variant_type<Properties::Spectrum> { static constexpr auto value = Type::Spectrum; };
 
 using Variant = std::variant<std::monostate, bool, int64_t, Float, std::string,
-                             Array3f, Array4f, Array16f, Color3f, Latent4f, Latent16f, Properties::Spectrum, AffineTransform4f, Reference,
+                             Array3f, Array4f, Array16f, Array64f, Color3f, Latent4f, Latent16f, Latent64f, Properties::Spectrum, AffineTransform4f, Reference,
                              ResolvedReference, ref<Object>, Any>;
 
 /// Minimal heap-allocated string for efficient storage with string_view compatibility
@@ -400,9 +406,11 @@ bool Properties::operator==(const Properties &p) const {
             bool operator()(const Array3f &v) const { return dr::all(v == std::get<Array3f>(other)); }
             bool operator()(const Array4f &v) const { return dr::all(v == std::get<Array4f>(other)); }
             bool operator()(const Array16f &v) const { return dr::all(v == std::get<Array16f>(other)); }
+            bool operator()(const Array64f &v) const { return dr::all(v == std::get<Array64f>(other)); }
             bool operator()(const Color3f &v) const { return dr::all(v == std::get<Color3f>(other)); }
             bool operator()(const Latent4f &v) const { return dr::all(v == std::get<Latent4f>(other)); }
             bool operator()(const Latent16f &v) const { return dr::all(v == std::get<Latent16f>(other)); }
+            bool operator()(const Latent64f &v) const { return dr::all(v == std::get<Latent64f>(other)); }
             bool operator()(const Properties::Spectrum &v) const { return v == std::get<Properties::Spectrum>(other); }
             bool operator()(const AffineTransform4f &v) const { return v == std::get<AffineTransform4f>(other); }
             bool operator()(const Reference &v) const { return v == std::get<Reference>(other); }
@@ -476,6 +484,73 @@ size_t Properties::hash() const {
                 h = hash_combine(h, mitsuba::hash(v[15]));
                 return h;
             }
+            size_t operator()(const Array64f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                h = hash_combine(h, mitsuba::hash(v[4]));
+                h = hash_combine(h, mitsuba::hash(v[5]));
+                h = hash_combine(h, mitsuba::hash(v[6]));
+                h = hash_combine(h, mitsuba::hash(v[7]));
+                h = hash_combine(h, mitsuba::hash(v[8]));
+                h = hash_combine(h, mitsuba::hash(v[9]));
+                h = hash_combine(h, mitsuba::hash(v[10]));
+                h = hash_combine(h, mitsuba::hash(v[11]));
+                h = hash_combine(h, mitsuba::hash(v[12]));
+                h = hash_combine(h, mitsuba::hash(v[13]));
+                h = hash_combine(h, mitsuba::hash(v[14]));
+                h = hash_combine(h, mitsuba::hash(v[15]));
+                h = hash_combine(h, mitsuba::hash(v[16]));
+                h = hash_combine(h, mitsuba::hash(v[17]));
+                h = hash_combine(h, mitsuba::hash(v[18]));
+                h = hash_combine(h, mitsuba::hash(v[19]));
+                h = hash_combine(h, mitsuba::hash(v[20]));
+                h = hash_combine(h, mitsuba::hash(v[21]));
+                h = hash_combine(h, mitsuba::hash(v[22]));
+                h = hash_combine(h, mitsuba::hash(v[23]));
+                h = hash_combine(h, mitsuba::hash(v[24]));
+                h = hash_combine(h, mitsuba::hash(v[25]));
+                h = hash_combine(h, mitsuba::hash(v[26]));
+                h = hash_combine(h, mitsuba::hash(v[27]));
+                h = hash_combine(h, mitsuba::hash(v[28]));
+                h = hash_combine(h, mitsuba::hash(v[29]));
+                h = hash_combine(h, mitsuba::hash(v[30]));
+                h = hash_combine(h, mitsuba::hash(v[31]));
+                h = hash_combine(h, mitsuba::hash(v[32]));
+                h = hash_combine(h, mitsuba::hash(v[33]));
+                h = hash_combine(h, mitsuba::hash(v[34]));
+                h = hash_combine(h, mitsuba::hash(v[35]));
+                h = hash_combine(h, mitsuba::hash(v[36]));
+                h = hash_combine(h, mitsuba::hash(v[37]));
+                h = hash_combine(h, mitsuba::hash(v[38]));
+                h = hash_combine(h, mitsuba::hash(v[39]));
+                h = hash_combine(h, mitsuba::hash(v[40]));
+                h = hash_combine(h, mitsuba::hash(v[41]));
+                h = hash_combine(h, mitsuba::hash(v[42]));
+                h = hash_combine(h, mitsuba::hash(v[43]));
+                h = hash_combine(h, mitsuba::hash(v[44]));
+                h = hash_combine(h, mitsuba::hash(v[45]));
+                h = hash_combine(h, mitsuba::hash(v[46]));
+                h = hash_combine(h, mitsuba::hash(v[47]));
+                h = hash_combine(h, mitsuba::hash(v[48]));
+                h = hash_combine(h, mitsuba::hash(v[49]));
+                h = hash_combine(h, mitsuba::hash(v[50]));
+                h = hash_combine(h, mitsuba::hash(v[51]));
+                h = hash_combine(h, mitsuba::hash(v[52]));
+                h = hash_combine(h, mitsuba::hash(v[53]));
+                h = hash_combine(h, mitsuba::hash(v[54]));
+                h = hash_combine(h, mitsuba::hash(v[55]));
+                h = hash_combine(h, mitsuba::hash(v[56]));
+                h = hash_combine(h, mitsuba::hash(v[57]));
+                h = hash_combine(h, mitsuba::hash(v[58]));
+                h = hash_combine(h, mitsuba::hash(v[59]));
+                h = hash_combine(h, mitsuba::hash(v[60]));
+                h = hash_combine(h, mitsuba::hash(v[61]));
+                h = hash_combine(h, mitsuba::hash(v[62]));
+                h = hash_combine(h, mitsuba::hash(v[63]));
+                return h;
+            }
             size_t operator()(const Color3f &v) const {
                 size_t h = mitsuba::hash(v[0]);
                 h = hash_combine(h, mitsuba::hash(v[1]));
@@ -506,6 +581,73 @@ size_t Properties::hash() const {
                 h = hash_combine(h, mitsuba::hash(v[13]));
                 h = hash_combine(h, mitsuba::hash(v[14]));
                 h = hash_combine(h, mitsuba::hash(v[15]));
+                return h;
+            }
+            size_t operator()(const Latent64f &v) const {
+                size_t h = mitsuba::hash(v[0]);
+                h = hash_combine(h, mitsuba::hash(v[1]));
+                h = hash_combine(h, mitsuba::hash(v[2]));
+                h = hash_combine(h, mitsuba::hash(v[3]));
+                h = hash_combine(h, mitsuba::hash(v[4]));
+                h = hash_combine(h, mitsuba::hash(v[5]));
+                h = hash_combine(h, mitsuba::hash(v[6]));
+                h = hash_combine(h, mitsuba::hash(v[7]));
+                h = hash_combine(h, mitsuba::hash(v[8]));
+                h = hash_combine(h, mitsuba::hash(v[9]));
+                h = hash_combine(h, mitsuba::hash(v[10]));
+                h = hash_combine(h, mitsuba::hash(v[11]));
+                h = hash_combine(h, mitsuba::hash(v[12]));
+                h = hash_combine(h, mitsuba::hash(v[13]));
+                h = hash_combine(h, mitsuba::hash(v[14]));
+                h = hash_combine(h, mitsuba::hash(v[15]));
+                h = hash_combine(h, mitsuba::hash(v[16]));
+                h = hash_combine(h, mitsuba::hash(v[17]));
+                h = hash_combine(h, mitsuba::hash(v[18]));
+                h = hash_combine(h, mitsuba::hash(v[19]));
+                h = hash_combine(h, mitsuba::hash(v[20]));
+                h = hash_combine(h, mitsuba::hash(v[21]));
+                h = hash_combine(h, mitsuba::hash(v[22]));
+                h = hash_combine(h, mitsuba::hash(v[23]));
+                h = hash_combine(h, mitsuba::hash(v[24]));
+                h = hash_combine(h, mitsuba::hash(v[25]));
+                h = hash_combine(h, mitsuba::hash(v[26]));
+                h = hash_combine(h, mitsuba::hash(v[27]));
+                h = hash_combine(h, mitsuba::hash(v[28]));
+                h = hash_combine(h, mitsuba::hash(v[29]));
+                h = hash_combine(h, mitsuba::hash(v[30]));
+                h = hash_combine(h, mitsuba::hash(v[31]));
+                h = hash_combine(h, mitsuba::hash(v[32]));
+                h = hash_combine(h, mitsuba::hash(v[33]));
+                h = hash_combine(h, mitsuba::hash(v[34]));
+                h = hash_combine(h, mitsuba::hash(v[35]));
+                h = hash_combine(h, mitsuba::hash(v[36]));
+                h = hash_combine(h, mitsuba::hash(v[37]));
+                h = hash_combine(h, mitsuba::hash(v[38]));
+                h = hash_combine(h, mitsuba::hash(v[39]));
+                h = hash_combine(h, mitsuba::hash(v[40]));
+                h = hash_combine(h, mitsuba::hash(v[41]));
+                h = hash_combine(h, mitsuba::hash(v[42]));
+                h = hash_combine(h, mitsuba::hash(v[43]));
+                h = hash_combine(h, mitsuba::hash(v[44]));
+                h = hash_combine(h, mitsuba::hash(v[45]));
+                h = hash_combine(h, mitsuba::hash(v[46]));
+                h = hash_combine(h, mitsuba::hash(v[47]));
+                h = hash_combine(h, mitsuba::hash(v[48]));
+                h = hash_combine(h, mitsuba::hash(v[49]));
+                h = hash_combine(h, mitsuba::hash(v[50]));
+                h = hash_combine(h, mitsuba::hash(v[51]));
+                h = hash_combine(h, mitsuba::hash(v[52]));
+                h = hash_combine(h, mitsuba::hash(v[53]));
+                h = hash_combine(h, mitsuba::hash(v[54]));
+                h = hash_combine(h, mitsuba::hash(v[55]));
+                h = hash_combine(h, mitsuba::hash(v[56]));
+                h = hash_combine(h, mitsuba::hash(v[57]));
+                h = hash_combine(h, mitsuba::hash(v[58]));
+                h = hash_combine(h, mitsuba::hash(v[59]));
+                h = hash_combine(h, mitsuba::hash(v[60]));
+                h = hash_combine(h, mitsuba::hash(v[61]));
+                h = hash_combine(h, mitsuba::hash(v[62]));
+                h = hash_combine(h, mitsuba::hash(v[63]));
                 return h;
             }
             size_t operator()(const Properties::Spectrum &s) const {
@@ -551,11 +693,13 @@ namespace {
         void operator()(const Array3f &t) { os << t; }
         void operator()(const Array4f &t) { os << t; }
         void operator()(const Array16f &t) { os << t; }
+        void operator()(const Array64f &t) { os << t; }
         void operator()(const std::string &s) { os << "\"" << s << "\""; }
         void operator()(const AffineTransform4f &t) { os << t.matrix; }
         void operator()(const Color3f &t) { os << t; }
         void operator()(const Latent4f &t) { os << t; }
         void operator()(const Latent16f &t) { os << t; }
+        void operator()(const Latent64f &t) { os << t; }
         void operator()(const Properties::Spectrum &s) {
             if (s.is_uniform()) {
                 os << "[spectrum: " << s.values[0] << "]";
@@ -677,6 +821,7 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
     bool is_spectral      = variant.find("spectral") != std::string::npos,
          is_latent4       = variant.find("latent4")  != std::string::npos,
          is_latent16      = variant.find("latent16") != std::string::npos,
+         is_latent64      = variant.find("latent64") != std::string::npos,
          is_monochromatic = variant.find("mono")     != std::string::npos;
 
     switch (type) {
@@ -696,6 +841,9 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
                 } else if (is_latent16) {
                     plugin_name = "latspec";
                     props.set("color", Latent16f(scalar_value));
+                } else if (is_latent64) {
+                    plugin_name = "latspec";
+                    props.set("color", Latent64f(scalar_value));
                 } else {
                     // For RGB/spectral emitters, create d65 texture with grayscale color
                     plugin_name = "d65";
@@ -744,6 +892,14 @@ ref<Object> Properties::get_texture_impl(std::string_view name,
                 //     props.set("color", color);
                 // }
                 
+                plugin_name = "latspec";
+                props.set("color", color);
+            }
+            break;
+
+        case Type::Latent64: {
+                Latent64f color = std::get<Latent64f>(value);
+
                 plugin_name = "latspec";
                 props.set("color", color);
             }

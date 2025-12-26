@@ -30,6 +30,7 @@ using ScalarVector3d    = Vector<double, 3>;
 using ScalarColor3d     = Color<double, 3>;
 using ScalarLatent4d    = Color<double, 4>;
 using ScalarLatent16d   = Color<double, 16>;
+using ScalarLatent64d   = Color<double, 64>;
 using ScalarPoint3d     = Point<double, 3>;
 using ScalarPoint4d     = Point<double, 4>;
 using ScalarMatrix4d    = dr::Matrix<double, 4>;
@@ -771,9 +772,75 @@ static void parse_xml_node(const ParserConfig &config, ParserState &state,
                                                             string::stof<double>(tokens[14]),
                                                             string::stof<double>(tokens[15]));
                     state[parent_idx].props.set(name, color);
+                } else if (tokens.size() == 64) {
+                    ScalarLatent64d color = ScalarLatent64d(string::stof<double>(tokens[0]),
+                                                            string::stof<double>(tokens[1]),
+                                                            string::stof<double>(tokens[2]),
+                                                            string::stof<double>(tokens[3]),
+                                                            string::stof<double>(tokens[4]),
+                                                            string::stof<double>(tokens[5]),
+                                                            string::stof<double>(tokens[6]),
+                                                            string::stof<double>(tokens[7]),
+                                                            string::stof<double>(tokens[8]),
+                                                            string::stof<double>(tokens[9]),
+                                                            string::stof<double>(tokens[10]),
+                                                            string::stof<double>(tokens[11]),
+                                                            string::stof<double>(tokens[12]),
+                                                            string::stof<double>(tokens[13]),
+                                                            string::stof<double>(tokens[14]),
+                                                            string::stof<double>(tokens[15]),
+                                                            string::stof<double>(tokens[16]),
+                                                            string::stof<double>(tokens[17]),
+                                                            string::stof<double>(tokens[18]),
+                                                            string::stof<double>(tokens[19]),
+                                                            string::stof<double>(tokens[20]),
+                                                            string::stof<double>(tokens[21]),
+                                                            string::stof<double>(tokens[22]),
+                                                            string::stof<double>(tokens[23]),
+                                                            string::stof<double>(tokens[24]),
+                                                            string::stof<double>(tokens[25]),
+                                                            string::stof<double>(tokens[26]),
+                                                            string::stof<double>(tokens[27]),
+                                                            string::stof<double>(tokens[28]),
+                                                            string::stof<double>(tokens[29]),
+                                                            string::stof<double>(tokens[30]),
+                                                            string::stof<double>(tokens[31]),
+                                                            string::stof<double>(tokens[32]),
+                                                            string::stof<double>(tokens[33]),
+                                                            string::stof<double>(tokens[34]),
+                                                            string::stof<double>(tokens[35]),
+                                                            string::stof<double>(tokens[36]),
+                                                            string::stof<double>(tokens[37]),
+                                                            string::stof<double>(tokens[38]),
+                                                            string::stof<double>(tokens[39]),
+                                                            string::stof<double>(tokens[40]),
+                                                            string::stof<double>(tokens[41]),
+                                                            string::stof<double>(tokens[42]),
+                                                            string::stof<double>(tokens[43]),
+                                                            string::stof<double>(tokens[44]),
+                                                            string::stof<double>(tokens[45]),
+                                                            string::stof<double>(tokens[46]),
+                                                            string::stof<double>(tokens[47]),
+                                                            string::stof<double>(tokens[48]),
+                                                            string::stof<double>(tokens[49]),
+                                                            string::stof<double>(tokens[50]),
+                                                            string::stof<double>(tokens[51]),
+                                                            string::stof<double>(tokens[52]),
+                                                            string::stof<double>(tokens[53]),
+                                                            string::stof<double>(tokens[54]),
+                                                            string::stof<double>(tokens[55]),
+                                                            string::stof<double>(tokens[56]),
+                                                            string::stof<double>(tokens[57]),
+                                                            string::stof<double>(tokens[58]),
+                                                            string::stof<double>(tokens[59]),
+                                                            string::stof<double>(tokens[60]),
+                                                            string::stof<double>(tokens[61]),
+                                                            string::stof<double>(tokens[62]),
+                                                            string::stof<double>(tokens[63]));
+                    state[parent_idx].props.set(name, color);
                 } else {
                     fail(state, scene_node,
-                         "<rgb> tag requires four or sixteen values (got %zu)",
+                         "<latent> tag requires four, sixteen, or sixty-four values (got %zu)",
                          tokens.size());
                 }
             } catch (...) {

@@ -62,6 +62,18 @@ struct spectrum_traits<Color<Float, 16>> {
     static constexpr bool is_polarized       = false;
 };
 
+template <typename Float>
+struct spectrum_traits<Color<Float, 64>> {
+    using Scalar                             = Color<dr::scalar_t<Float>, 64>;
+    using Wavelength                         = Color<Float, 0>;
+    using Unpolarized                        = Color<Float, 64>;
+    static constexpr bool is_monochromatic   = false;
+    static constexpr bool is_rgb             = false;
+    static constexpr bool is_latent          = true;
+    static constexpr bool is_spectral        = false;
+    static constexpr bool is_polarized       = false;
+};
+
 template <typename Float, size_t Size>
 struct spectrum_traits<Spectrum<Float, Size>> {
     using Scalar                             = Spectrum<dr::scalar_t<Float>, Size>;
