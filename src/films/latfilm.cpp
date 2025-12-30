@@ -54,10 +54,12 @@ public:
         std::vector<std::string> channels(base_channels + aovs.size());
 
         // Add basic RGBAW channels to the film
-        const char *base_channel_names = "ch00ch01ch02ch03ch04ch05ch06ch07ch08ch09ch10ch11ch12ch13ch14ch15WWWW";
-
-        for (size_t i = 0; i < base_channels; ++i)
-            channels[i] = std::string(base_channel_names + 4*i, 4);
+        for (size_t i = 0; i < lat_ch; ++i) {
+            char buf[5];    // chXX\0
+            std::snprintf(buf, sizeof(buf), "ch%02zu", i);
+            channels[i] = buf;
+        }
+        channels[lat_ch] = "WWWW";
 
         for (size_t i = 0; i < aovs.size(); ++i)
             channels[base_channels + i] = aovs[i];
