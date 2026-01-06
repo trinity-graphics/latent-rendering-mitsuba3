@@ -338,6 +338,10 @@ protected:
         if constexpr (is_spectral_v<Spectrum>)
             if (!m_raw)
                 upsample_spectral<StoredScalar>(m_bitmap.get());
+        else if constexpr (is_latent_v<Spectrum> && !m_raw) {
+            upsample_latent<StoredScalar>(m_bitmap.get());
+            pf = Bitmap::PixelFormat::MultiChannel;
+        }
 
         ScalarVector2i res(m_bitmap->size());
         size_t shape[3] = { (size_t) res.y(), (size_t) res.x(),
@@ -417,6 +421,32 @@ private:
             ptr[1] = (StoredScalar) coeff[1];
             ptr[2] = (StoredScalar) coeff[2];
         }
+    }
+
+    /// Convert RGB values to latent values
+    template <typename StoredScalar> void upsample_latent(Bitmap *bitmap) const {
+        if (bitmap->channel_count() != 3)
+            return;
+        StoredScalar *ptr = (StoredScalar *) bitmap->data();
+        size_t pixel_count = bitmap->pixel_count();
+        
+        Bitmap *temp = new Bitmap(
+            Bitmap::PixelFormat::MultiChannel,
+            m_bitmap->component_format(),
+            ScalarVector2u(m_bitmap->width(), m_bitmap->height()),
+            Spectrum::Size
+        );
+        StoredScalar *dst = (StoredScalar*) temp->data();
+
+        for (size_t i = 0; i < pixel_count; ++i) {
+            ScalarColor3f value = dr::load<ScalarColor3f>(src);
+            auto expanded = dr::Array<StoredScalar, Spectrum::Size>(luminance(value));
+            dr::store(dst, expanded);
+            src += 3;
+            dst += Spectrum::Size;
+        }
+
+        m_bitmap = temp;
     }
 
     Format m_format;
