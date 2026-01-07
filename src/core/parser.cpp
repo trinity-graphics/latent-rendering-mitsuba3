@@ -30,6 +30,7 @@ using ScalarVector3d    = Vector<double, 3>;
 using ScalarColor3d     = Color<double, 3>;
 using ScalarLatent4d    = Color<double, 4>;
 using ScalarLatent16d   = Color<double, 16>;
+using ScalarLatent32d   = Color<double, 32>;
 using ScalarLatent64d   = Color<double, 64>;
 using ScalarPoint3d     = Point<double, 3>;
 using ScalarPoint4d     = Point<double, 4>;
@@ -772,6 +773,40 @@ static void parse_xml_node(const ParserConfig &config, ParserState &state,
                                                             string::stof<double>(tokens[14]),
                                                             string::stof<double>(tokens[15]));
                     state[parent_idx].props.set(name, color);
+                } else if (tokens.size() == 32) {
+                    ScalarLatent32d color = ScalarLatent32d(string::stof<double>(tokens[0]),
+                                                            string::stof<double>(tokens[1]),
+                                                            string::stof<double>(tokens[2]),
+                                                            string::stof<double>(tokens[3]),
+                                                            string::stof<double>(tokens[4]),
+                                                            string::stof<double>(tokens[5]),
+                                                            string::stof<double>(tokens[6]),
+                                                            string::stof<double>(tokens[7]),
+                                                            string::stof<double>(tokens[8]),
+                                                            string::stof<double>(tokens[9]),
+                                                            string::stof<double>(tokens[10]),
+                                                            string::stof<double>(tokens[11]),
+                                                            string::stof<double>(tokens[12]),
+                                                            string::stof<double>(tokens[13]),
+                                                            string::stof<double>(tokens[14]),
+                                                            string::stof<double>(tokens[15]),
+                                                            string::stof<double>(tokens[16]),
+                                                            string::stof<double>(tokens[17]),
+                                                            string::stof<double>(tokens[18]),
+                                                            string::stof<double>(tokens[19]),
+                                                            string::stof<double>(tokens[20]),
+                                                            string::stof<double>(tokens[21]),
+                                                            string::stof<double>(tokens[22]),
+                                                            string::stof<double>(tokens[23]),
+                                                            string::stof<double>(tokens[24]),
+                                                            string::stof<double>(tokens[25]),
+                                                            string::stof<double>(tokens[26]),
+                                                            string::stof<double>(tokens[27]),
+                                                            string::stof<double>(tokens[28]),
+                                                            string::stof<double>(tokens[29]),
+                                                            string::stof<double>(tokens[30]),
+                                                            string::stof<double>(tokens[31]));
+                    state[parent_idx].props.set(name, color);
                 } else if (tokens.size() == 64) {
                     ScalarLatent64d color = ScalarLatent64d(string::stof<double>(tokens[0]),
                                                             string::stof<double>(tokens[1]),
@@ -840,7 +875,7 @@ static void parse_xml_node(const ParserConfig &config, ParserState &state,
                     state[parent_idx].props.set(name, color);
                 } else {
                     fail(state, scene_node,
-                         "<latent> tag requires four, sixteen, or sixty-four values (got %zu)",
+                         "<latent> tag requires 4, 16, 32, or 64 values (got %zu)",
                          tokens.size());
                 }
             } catch (...) {

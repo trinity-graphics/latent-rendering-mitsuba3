@@ -143,6 +143,9 @@ public:
         /// 16D array
         Vector16,
 
+        /// 32D array
+        Vector32,
+
         /// 64D array
         Vector64,
 
@@ -154,6 +157,9 @@ public:
 
         // 16-channel latent value
         Latent16,
+
+        // 32-channel latent value
+        Latent32,
 
         // 64-channel latent value
         Latent64,
@@ -880,6 +886,12 @@ template <typename T> T Properties::get(size_t index) const {
             return Color<double, 16>(*alt);
     }
 
+    // Handle Vector32f -> Latent32f conversion for convenience
+    if constexpr (std::is_same_v<T2, Color<double, 32>>) {
+        if (auto *alt = get_impl<dr::Array<double, 32>>(index, false); alt)
+            return Color<double, 32>(*alt);
+    }
+
     // Handle Vector64f -> Latent64f conversion for convenience
     if constexpr (std::is_same_v<T2, Color<double, 64>>) {
         if (auto *alt = get_impl<dr::Array<double, 64>>(index, false); alt)
@@ -957,7 +969,7 @@ ref<T> Properties::get_volume(std::string_view name) const {
         Properties props("constvolume");
         props.set("value", get<double>(name));
         return PluginManager::instance()->create_object<T>(props);
-    } else if (prop_type == Type::Color || prop_type == Type::Latent4 || prop_type == Type::Latent16 || prop_type == Type::Latent64 || prop_type == Type::Spectrum) {
+    } else if (prop_type == Type::Color || prop_type == Type::Latent4 || prop_type == Type::Latent16 || prop_type == Type::Latent32 || prop_type == Type::Latent64 || prop_type == Type::Spectrum) {
         // For Color/Spectrum properties, create a texture first
         Properties props("constvolume");
         props.set("value", get_texture_impl(name, T::Variant, false, false));
@@ -1003,10 +1015,12 @@ Properties::set_impl<AffineTransform<Point<double, 3>>>(
     MI_EXPORT_PROP(Mode, dr::Array<double, 3>)                                 \
     MI_EXPORT_PROP(Mode, dr::Array<double, 4>)                                 \
     MI_EXPORT_PROP(Mode, dr::Array<double, 16>)                                \
+    MI_EXPORT_PROP(Mode, dr::Array<double, 32>)                                \
     MI_EXPORT_PROP(Mode, dr::Array<double, 64>)                                \
     MI_EXPORT_PROP(Mode, Color<double, 3>)                                     \
     MI_EXPORT_PROP(Mode, Color<double, 4>)                                     \
     MI_EXPORT_PROP(Mode, Color<double, 16>)                                    \
+    MI_EXPORT_PROP(Mode, Color<double, 32>)                                    \
     MI_EXPORT_PROP(Mode, Color<double, 64>)                                    \
     MI_EXPORT_PROP(Mode, AffineTransform<Point<double, 4>>)                    \
     MI_EXPORT_PROP(Mode, std::string)                                          \
@@ -1032,6 +1046,7 @@ template <typename T, size_t N> struct prop_map<dr::Array<T, N>> { using type = 
 template <typename T> struct prop_map<Color<T, 3>> { using type = Color<double, 3>; };
 template <typename T> struct prop_map<Color<T, 4>> { using type = Color<double, 4>; };
 template <typename T> struct prop_map<Color<T, 16>> { using type = Color<double, 16>; };
+template <typename T> struct prop_map<Color<T, 32>> { using type = Color<double, 32>; };
 template <typename T> struct prop_map<Color<T, 64>> { using type = Color<double, 64>; };
 template <typename T, size_t N> struct prop_map<AffineTransform<Point<T, N>>> { using type = AffineTransform<Point<double, 4>>; };
 template <typename T> struct prop_map<mitsuba::ref<T>> { using type = ref<Object>; };

@@ -56,6 +56,7 @@ static nb::object get_property(const Properties& p, std::string_view key) {
         case Properties::Type::Vector:            return nb::cast(p.get<dr::Array<double, 3>>(key));
         case Properties::Type::Latent4:           return nb::cast(p.get<Color<double, 4>>(key));
         case Properties::Type::Latent16:          return nb::cast(p.get<Color<double, 16>>(key));
+        case Properties::Type::Latent32:          return nb::cast(p.get<Color<double, 32>>(key));
         case Properties::Type::Latent64:          return nb::cast(p.get<Color<double, 64>>(key));
         case Properties::Type::Color:             return nb::cast(p.get<Color<double, 3>>(key));
         case Properties::Type::Transform:         return nb::cast(p.get<AffineTransform<Point<double, 4>>>(key));
