@@ -743,7 +743,7 @@ class RBIntegrator(ADIntegrator):
                     value=L * weight,
                     weight=1.0,
                     alpha=1.0,
-                    aovs=[aov * weight for aov in aovs]
+                    aovs=[aovs[i] * weight[i]for i in range(len(aovs))]
                 )
 
                 δL = dr.grad(L)
