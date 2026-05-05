@@ -93,6 +93,33 @@
     # need to be edited (unless you wish to create new variants).
     # -------------------------------------------------------------
 
+    # Latent variant definitions
+
+    "cuda_ad_latent4": {
+        "float": "dr::DiffArray<JitBackend::CUDA, float>",
+        "spectrum": "Color<Float, 4>"
+    },
+
+    "cuda_ad_latent16": {
+        "float": "dr::DiffArray<JitBackend::CUDA, float>",
+        "spectrum": "Color<Float, 16>"
+    },
+
+    "cuda_ad_latent32": {
+        "float": "dr::DiffArray<JitBackend::CUDA, float>",
+        "spectrum": "Color<Float, 32>"
+    },
+
+    "cuda_ad_latent64": {
+        "float": "dr::DiffArray<JitBackend::CUDA, float>",
+        "spectrum": "Color<Float, 64>"
+    },
+
+    "scalar_latent16": {
+        "float": "float",
+        "spectrum": "Color<Float, 16>"
+    },
+
     # Scalar variant definitions
 
     "scalar_mono": {
