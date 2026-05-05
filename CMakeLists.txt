@@ -93,16 +93,22 @@ if (SKBUILD)
   mark_as_advanced(MI_DRJIT_CMAKE_DIR)
 
   if("${MI_DRJIT_CMAKE_DIR}" STREQUAL "")
-    execute_process(
-      COMMAND
-      "${PYTHON_EXECUTABLE}" -c
-      "import drjit; print(drjit.get_cmake_dir())"
-      OUTPUT_VARIABLE MI_DRJIT_CMAKE_DIR
-      OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
+    if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/ext/drjit/CMakeLists.txt")
+      add_subdirectory(ext/drjit)
+    else()
+      execute_process(
+        COMMAND
+        "${PYTHON_EXECUTABLE}" -c
+        "import drjit; print(drjit.get_cmake_dir())"
+        OUTPUT_VARIABLE MI_DRJIT_CMAKE_DIR
+        OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ECHO STDOUT)
+      list(APPEND CMAKE_PREFIX_PATH "${MI_DRJIT_CMAKE_DIR}")
+      find_package(drjit CONFIG REQUIRED)
+    endif()
+  else()
+    list(APPEND CMAKE_PREFIX_PATH "${MI_DRJIT_CMAKE_DIR}")
+    find_package(drjit CONFIG REQUIRED)
   endif()
-
-  list(APPEND CMAKE_PREFIX_PATH "${MI_DRJIT_CMAKE_DIR}")
-  find_package(drjit CONFIG REQUIRED)
 endif()
 
 # ----------------------------------------------------------

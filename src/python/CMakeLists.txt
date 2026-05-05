@@ -234,11 +234,19 @@ endif()
 #   Generate type information stubs (mitsuba)
 # ----------------------------------------------------------
 
-set(STUB_ARGS
-  PYTHON_PATH ${MI_BINARY_DIR}/python
-  PATTERN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/stubs.pat
-  DEPENDS ${MI_STUB_DEPENDS}
-)
+if (SKBUILD AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/../../ext/drjit/CMakeLists.txt")
+  set(STUB_ARGS
+    PYTHON_PATH ${MI_BINARY_DIR}/python ${MI_BINARY_DIR}/ext/drjit
+    PATTERN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/stubs.pat
+    DEPENDS ${MI_STUB_DEPENDS}
+  )
+else()
+  set(STUB_ARGS
+    PYTHON_PATH ${MI_BINARY_DIR}/python
+    PATTERN_FILE ${CMAKE_CURRENT_SOURCE_DIR}/stubs.pat
+    DEPENDS ${MI_STUB_DEPENDS}
+  )
+endif()
 
 # The sanitizers require preloading shared libraries into Python, and that
 # doesn't play well with stub generation. Disable stubs if sanitizers are
