@@ -36,10 +36,13 @@ public:
 
     Float eval_1(const SurfaceInteraction3f &si, Mask active) const override {
         MI_MASKED_FUNCTION(ProfilerPhase::TextureEvaluate, active);
-        return m_texture->eval_1(si, active);
+        return m_texture->eval_1(si, active) * m_scale->eval_1(si, active) + m_offset->eval_1(si, active);
     }
 
-    Float mean() const override { return m_texture->mean(); }
+    Float mean() const override { 
+        return m_texture->mean();
+        // return m_texture->mean() * m_scale->mean(si, active) + m_offset->mean(si, active);
+    }
 
     bool is_spatially_varying() const override { return true; }
 
