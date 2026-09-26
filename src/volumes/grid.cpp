@@ -580,13 +580,9 @@ protected:
         MI_MASK_ARGUMENT(active);
 
         Point3f p = m_to_local * it.p;
-        dr::Array<Float, 16> result;
-        if (m_accel)
-            m_texture.template eval<Float>(p, result.data(), active);
-        else
-            m_texture.template eval_nonaccel<Float>(p, result.data(), active);
-
-        return result;
+        using Data16 = dr::Array<Float, 16>;
+        return m_accel ? m_texture.template eval<Data16>(p, active)
+                       : m_texture.template eval_nonaccel<Data16>(p, active);
     }
 
     /**
@@ -599,13 +595,8 @@ protected:
         MI_MASK_ARGUMENT(active);
 
         Point3f p = m_to_local * it.p;
-        UnpolarizedSpectrum result;
-        if (m_accel)
-            m_texture.template eval<Float>(p, result.data(), active);
-        else
-            m_texture.template eval_nonaccel<Float>(p, result.data(), active);
-
-        return result;
+        return m_accel ? m_texture.template eval<UnpolarizedSpectrum>(p, active)
+                       : m_texture.template eval_nonaccel<UnpolarizedSpectrum>(p, active);
     }
 
     /**

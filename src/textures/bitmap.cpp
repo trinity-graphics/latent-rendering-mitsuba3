@@ -335,12 +335,14 @@ protected:
                                   /* keep_srgb_gamma = */ srgb);
 
         // Spectral variants store smooth-spectrum coefficients (float/half only)
-        if constexpr (is_spectral_v<Spectrum>)
+        if constexpr (is_spectral_v<Spectrum>) {
             if (!m_raw)
                 upsample_spectral<StoredScalar>(m_bitmap.get());
-        else if constexpr (is_latent_v<Spectrum> && !m_raw) {
-            upsample_latent<StoredScalar>(m_bitmap.get());
-            pf = Bitmap::PixelFormat::MultiChannel;
+        } else if constexpr (is_latent_v<Spectrum>) {
+            if (!m_raw) {
+                upsample_latent<StoredScalar>(m_bitmap.get());
+                pf = Bitmap::PixelFormat::MultiChannel;
+            }
         }
 
         ScalarVector2i res(m_bitmap->size());
@@ -439,10 +441,10 @@ private:
         StoredScalar *dst = (StoredScalar*) temp->data();
 
         for (size_t i = 0; i < pixel_count; ++i) {
-            ScalarColor3f value = dr::load<ScalarColor3f>(src);
+            ScalarColor3f value = dr::load<ScalarColor3f>(ptr);
             auto expanded = dr::Array<StoredScalar, Spectrum::Size>(luminance(value));
             dr::store(dst, expanded);
-            src += 3;
+            ptr += 3;
             dst += Spectrum::Size;
         }
 

@@ -29,19 +29,24 @@ public:
         m_pixel_format = Bitmap::PixelFormat::MultiChannel;
 
         if (component_format == "float16")
-            m_component_format = Struct::Type::Float16;
+            m_component_format = sj::Type::Float16;
         else if (component_format == "float32")
-            m_component_format = Struct::Type::Float32;
+            m_component_format = sj::Type::Float32;
         else if (component_format == "uint32")
-            m_component_format = Struct::Type::UInt32;
+            m_component_format = sj::Type::UInt32;
         else
             Throw("The \"component_format\" parameter must either be "
                   "equal to \"float16\", \"float32\", or \"uint32\"."
                   " Found %s instead.", component_format);
 
-        m_compensate = props.get<bool>("compensate", false);
-
         props.mark_queried("banner"); // no banner in Mitsuba 3
+
+        if (props.has_property("compensate")) {
+            props.mark_queried("compensate");
+            Log(Warn, "The \"compensate\" (Kahan-style error-compensated "
+                      "accumulation) parameter has been removed and is now "
+                      "ignored.");
+        }
     }
 
     size_t base_channels_count() const override {
@@ -89,7 +94,6 @@ public:
                               border /* border */,
                               normalize /* normalize */,
                               dr::is_jit_v<Float> /* coalesce */,
-                              m_compensate /* compensate */,
                               false /* warn_negative */,
                               false /* warn_invalid */);
     }
@@ -192,7 +196,7 @@ public:
             Throw("No storage allocated, was prepare() called first?");
 
         std::lock_guard<std::mutex> lock(m_mutex);
-        auto &&storage = dr::migrate(m_storage->tensor().array(), AllocType::Host);
+        auto &&storage = dr::migrate(m_storage->tensor().array(), JitBackend::None);
 
         if constexpr (dr::is_jit_v<Float>)
             dr::sync_thread();
@@ -219,11 +223,11 @@ public:
             has_aovs ? target_ch : img_ch);
         
         if (has_aovs) {
-            source->struct_()->operator[](base_ch - 1).flags |=
-                +Struct::Flags::Weight;
+            source->struct_()[base_ch - 1].flags |=
+                +sj::Flag::Weight;
 
             for (size_t i = 0; i < target_ch; ++i) {
-                Struct::Field &dest_field = target->struct_()->operator[](i);
+                sj::Field &dest_field = target->struct_()[i];
                 dest_field.name = m_channels[base_ch + i - aovs_channel];
             }
         }
@@ -253,7 +257,7 @@ public:
             // Conversion is necessary before saving to disk
             std::vector<std::string> channel_names;
             for (size_t i = 0; i < source->channel_count(); i++)
-                channel_names.push_back(source->struct_()->operator[](i).name);
+                channel_names.push_back(source->struct_()[i].name);
             ref<Bitmap> target = new Bitmap(
                 source->pixel_format(),
                 m_component_format,
@@ -279,7 +283,6 @@ public:
             << "  crop_size = " << m_crop_size << "," << std::endl
             << "  crop_offset = " << m_crop_offset << "," << std::endl
             << "  sample_border = " << m_sample_border << "," << std::endl
-            << "  compensate = " << m_compensate << "," << std::endl
             << "  filter = " << m_filter << "," << std::endl
             << "  file_format = " << m_file_format << "," << std::endl
             << "  pixel_format = " << m_pixel_format << "," << std::endl
@@ -292,8 +295,7 @@ public:
 protected:
     Bitmap::FileFormat m_file_format;
     Bitmap::PixelFormat m_pixel_format;
-    Struct::Type m_component_format;
-    bool m_compensate;
+    sj::Type m_component_format;
     ref<ImageBlock> m_storage;
     mutable std::mutex m_mutex;
     std::vector<std::string> m_channels;
