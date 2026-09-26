@@ -39,7 +39,7 @@
 	shallow = true
 [submodule "ext/drjit"]
 	path = ext/drjit
-	url = https://github.com/vukRadovanovic/drjit-latent
+	url = https://github.com/trinity-graphics/latent-rendering-drjit.git
 [submodule "ext/nanobind"]
 	path = ext/nanobind
 	url = https://github.com/wjakob/nanobind.git
